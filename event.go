@@ -6,7 +6,7 @@ import (
 
 type messageWrapper struct {
 	message *Message
-	status Status
+	status  Status
 }
 
 func unpackEvent(bytes []byte) (map[string]interface{}, error) {

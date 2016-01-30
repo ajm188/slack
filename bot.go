@@ -4,24 +4,24 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gorilla/websocket"
 	log "github.com/Sirupsen/logrus"
+	"github.com/gorilla/websocket"
 )
 
 type Bot struct {
-	Token string
-	Name string
-	ID string
-	Handlers map[string]([]BotAction)
+	Token       string
+	Name        string
+	ID          string
+	Handlers    map[string]([]BotAction)
 	Subhandlers map[string](map[string]([]BotAction))
 }
 
 func NewBot(token string) *Bot {
 	return &Bot{
-		Token: token,
-		Name: "",
-		ID: "",
-		Handlers: make(map[string]([]BotAction)),
+		Token:       token,
+		Name:        "",
+		ID:          "",
+		Handlers:    make(map[string]([]BotAction)),
 		Subhandlers: make(map[string](map[string]([]BotAction))),
 	}
 }
@@ -67,7 +67,7 @@ func (bot *Bot) loop(conn *websocket.Conn) {
 		if err != nil {
 			log.WithFields(log.Fields{
 				"raw bytes": bytes,
-				"error": err,
+				"error":     err,
 			}).Warn("message could not be unpacked")
 		}
 		wrappers := bot.handle(event)
@@ -83,7 +83,7 @@ func sendResponses(wrappers []messageWrapper, conn *websocket.Conn) bool {
 	abort := false
 	for _, wrapper := range wrappers {
 		message := wrapper.message
-		switch (wrapper.status) {
+		switch wrapper.status {
 		case CONTINUE:
 			if message != nil {
 				conn.WriteJSON(message)
