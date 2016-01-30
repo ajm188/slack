@@ -10,6 +10,8 @@ import (
 
 type Bot struct {
 	Token string
+	Name string
+	ID string
 	Handlers map[string]([]BotAction)
 	Subhandlers map[string](map[string]([]BotAction))
 }
@@ -17,6 +19,8 @@ type Bot struct {
 func NewBot(token string) *Bot {
 	return &Bot{
 		Token: token,
+		Name: "",
+		ID: "",
 		Handlers: make(map[string]([]BotAction)),
 		Subhandlers: make(map[string](map[string]([]BotAction))),
 	}
@@ -32,6 +36,9 @@ func (bot *Bot) Start() error {
 		return &SlackError{"could not connect to RTM API"}
 	}
 	websocketURL, _ := payload["url"].(string)
+	self := payload["self"].(map[string]interface{})
+	bot.Name = self["name"].(string)
+	bot.ID = self["id"].(string)
 	return bot.connect(websocketURL)
 }
 
