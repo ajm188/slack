@@ -5,14 +5,21 @@ import (
 	"net/url"
 
 	"github.com/gorilla/websocket"
+	log "github.com/Sirupsen/logrus"
 )
 
 type Bot struct {
 	Token string
+	Handlers map[string]([]BotAction)
+	Subhandlers map[string](map[string]([]BotAction))
 }
 
 func NewBot(token string) *Bot {
-	return &Bot{Token: token}
+	return &Bot{
+		Token: token,
+		Handlers: make(map[string]([]BotAction)),
+		Subhandlers: make(map[string](map[string]([]BotAction))),
+	}
 }
 
 func (bot *Bot) Start() error {
@@ -49,5 +56,39 @@ func (bot *Bot) loop(conn *websocket.Conn) {
 		if messageType == websocket.BinaryMessage {
 			continue // ignore binary messages
 		}
+		event, err := unpackEvent(bytes)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"raw bytes": bytes,
+				"error": err,
+			}).Warn("message could not be unpacked")
+		}
+		wrappers := bot.handle(event)
+		closeConnection := sendResponses(wrappers, conn)
+		if closeConnection {
+			conn.Close()
+			return
+		}
 	}
+}
+
+func sendResponses(wrappers []messageWrapper, conn *websocket.Conn) bool {
+	abort := false
+	for _, wrapper := range wrappers {
+		message := wrapper.message
+		switch (wrapper.status) {
+		case CONTINUE:
+			if message != nil {
+				conn.WriteJSON(message)
+			}
+		case SHUTDOWN:
+			if message != nil {
+				conn.WriteJSON(message)
+			}
+			abort = true
+		case SHUTDOWN_NOW:
+			return true
+		}
+	}
+	return abort
 }
