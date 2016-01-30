@@ -1,3 +1,3 @@
 package slack
 
-type BotAction func(self *Bot, incoming map[string]interface{}) (*Message, Status)
+type BotAction func(self *Bot, event map[string]interface{}) (*Message, Status)
