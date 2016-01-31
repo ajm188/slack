@@ -12,6 +12,8 @@ const (
 	slackURL = "https://slack.com/api/%s"
 )
 
+// Call calls a Slack API method, setting the token of bot in the method call
+// parameters.
 func (bot *Bot) Call(method string, data url.Values) (map[string]interface{}, error) {
 	data.Set("token", bot.Token)
 	return callAPI(method, data)
