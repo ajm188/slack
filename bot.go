@@ -108,16 +108,16 @@ func sendResponses(wrappers []messageWrapper, conn *websocket.Conn) bool {
 	for _, wrapper := range wrappers {
 		message := wrapper.message
 		switch wrapper.status {
-		case CONTINUE:
+		case Continue:
 			if message != nil {
 				conn.WriteJSON(message.toMap())
 			}
-		case SHUTDOWN:
+		case Shutdown:
 			if message != nil {
 				conn.WriteJSON(message.toMap())
 			}
 			abort = true
-		case SHUTDOWN_NOW:
+		case ShutdownNow:
 			return true
 		}
 	}

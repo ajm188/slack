@@ -13,7 +13,7 @@ func React(emoji string) BotAction {
 		params.Set("timestamp", timestamp)
 		params.Set("name", emoji)
 		bot.Call("reactions.add", params)
-		return nil, CONTINUE
+		return nil, Continue
 	}
 	return closure
 }

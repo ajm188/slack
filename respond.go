@@ -9,7 +9,7 @@ func Respond(text string) BotAction {
 	closure := func(bot *Bot, event map[string]interface{}) (*Message, Status) {
 		user := event["user"].(string)
 		channel := event["channel"].(string)
-		return bot.Mention(user, text, channel), CONTINUE
+		return bot.Mention(user, text, channel), Continue
 	}
 	return closure
 }
@@ -21,13 +21,13 @@ func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 		text := event["text"].(string)
 		match := nameRe.FindStringIndex(text)
 		if match == nil {
-			return nil, CONTINUE
+			return nil, Continue
 		}
 		unmatchedText := text[match[1]+1:]
 		if re.MatchString(unmatchedText) {
 			return handler(self, event)
 		}
-		return nil, CONTINUE
+		return nil, Continue
 	}
 	messageHandlers, ok := bot.Handlers["message"]
 	if !ok {

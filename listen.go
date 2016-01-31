@@ -8,12 +8,12 @@ func (bot *Bot) ListenRegexp(re *regexp.Regexp, handler BotAction) {
 	closure := func(self *Bot, event map[string]interface{}) (*Message, Status) {
 		text, ok := event["text"].(string)
 		if !ok {
-			return nil, CONTINUE
+			return nil, Continue
 		}
 		if re.MatchString(text) {
 			return handler(self, event)
 		}
-		return nil, CONTINUE
+		return nil, Continue
 	}
 	messageHandlers, ok := bot.Handlers["message"]
 	if !ok {
