@@ -5,6 +5,7 @@ import (
 	"regexp"
 )
 
+// Respond creates a BotAction which responds to the passed-in event with text.
 func Respond(text string) BotAction {
 	closure := func(bot *Bot, event map[string]interface{}) (*Message, Status) {
 		user := event["user"].(string)

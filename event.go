@@ -9,6 +9,7 @@ type messageWrapper struct {
 	status  Status
 }
 
+// OnEvent registers handler to fire on the given type of event.
 func (bot *Bot) OnEvent(event string, handler BotAction) {
 	handlers, ok := bot.Handlers[event]
 	if !ok {
@@ -18,6 +19,8 @@ func (bot *Bot) OnEvent(event string, handler BotAction) {
 	bot.Handlers[event] = handlers
 }
 
+// OnEventWithSubtype registers handler to fire on the given type and subtype
+// of event.
 func (bot *Bot) OnEventWithSubtype(event, subtype string, handler BotAction) {
 	subtypeMap, ok := bot.Subhandlers[event]
 	if !ok {

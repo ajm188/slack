@@ -9,9 +9,11 @@ import (
 )
 
 const (
-	VERSION = "0.1.0"
+	// Version is the semantic version of this library.
+	Version = "0.1.0"
 )
 
+// Bot encapsulates all the data needed to interact with Slack.
 type Bot struct {
 	Token       string
 	Name        string
@@ -22,6 +24,7 @@ type Bot struct {
 	Channels    map[string]string
 }
 
+// NewBot constructs a new bot with the passed-in Slack API token.
 func NewBot(token string) *Bot {
 	return &Bot{
 		Token:       token,
@@ -34,6 +37,8 @@ func NewBot(token string) *Bot {
 	}
 }
 
+// Start initiates the bot's interaction with Slack. It obtains a websockect
+// URL, connects to it, and then starts the main loop.
 func (bot *Bot) Start() error {
 	payload, err := bot.Call("rtm.start", url.Values{})
 	if err != nil {
