@@ -14,6 +14,8 @@ type Bot struct {
 	ID          string
 	Handlers    map[string]([]BotAction)
 	Subhandlers map[string](map[string]([]BotAction))
+	Users       map[string]string
+	Channels    map[string]string
 }
 
 func NewBot(token string) *Bot {
@@ -23,6 +25,8 @@ func NewBot(token string) *Bot {
 		ID:          "",
 		Handlers:    make(map[string]([]BotAction)),
 		Subhandlers: make(map[string](map[string]([]BotAction))),
+		Users:       make(map[string]string),
+		Channels:    make(map[string]string),
 	}
 }
 
@@ -37,6 +41,22 @@ func (bot *Bot) Start() error {
 	}
 	websocketURL, _ := payload["url"].(string)
 	self := payload["self"].(map[string]interface{})
+	channels := payload["channels"].([]interface{})
+	for _, channelMap := range channels {
+		channel := channelMap.(map[string]interface{})
+		channelID := channel["id"].(string)
+		channelName := channel["name"].(string)
+		bot.Channels[channelName] = channelID
+		bot.Channels[channelID] = channelName
+	}
+	users := payload["users"].([]interface{})
+	for _, userMap := range users {
+		user := userMap.(map[string]interface{})
+		userID := user["id"].(string)
+		userName := user["name"].(string)
+		bot.Users[userName] = userID
+		bot.Users[userID] = userName
+	}
 	bot.Name = self["name"].(string)
 	bot.ID = self["id"].(string)
 	return bot.connect(websocketURL)
