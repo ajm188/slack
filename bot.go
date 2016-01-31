@@ -98,7 +98,11 @@ func (bot *Bot) loop(conn *websocket.Conn) {
 				"raw bytes": bytes,
 				"error":     err,
 			}).Warn("message could not be unpacked")
+			continue
 		}
+		log.WithFields(log.Fields{
+			"event": event,
+		}).Info("received event")
 		wrappers := bot.handle(event)
 		closeConnection := sendResponses(wrappers, conn)
 		if closeConnection {
