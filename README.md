@@ -1,5 +1,7 @@
 # slack
 
+[![GoDoc](https://godoc.org/github.com/ajm188/slack?status.svg)](https://godoc.org/github.com/ajm188/slack)
+
 ## Installation
 
 `go get github.com/ajm188/slack`
