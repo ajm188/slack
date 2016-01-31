@@ -86,11 +86,11 @@ func sendResponses(wrappers []messageWrapper, conn *websocket.Conn) bool {
 		switch wrapper.status {
 		case CONTINUE:
 			if message != nil {
-				conn.WriteJSON(message)
+				conn.WriteJSON(message.toMap())
 			}
 		case SHUTDOWN:
 			if message != nil {
-				conn.WriteJSON(message)
+				conn.WriteJSON(message.toMap())
 			}
 			abort = true
 		case SHUTDOWN_NOW:
