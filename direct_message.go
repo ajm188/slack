@@ -6,12 +6,12 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-func (bot *Bot) DirectMessage(userID, text string) (*Message, Status) {
+func (bot *Bot) DirectMessage(userID, text string) *Message {
 	dm, err := bot.OpenDirectMessage(userID)
 	if err != nil {
-		return nil, CONTINUE
+		return nil
 	}
-	return NewMessage(text, dm), CONTINUE
+	return NewMessage(text, dm)
 }
 
 func (bot *Bot) OpenDirectMessage(userID string) (string, error) {
