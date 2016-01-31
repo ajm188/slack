@@ -12,7 +12,7 @@ type messageWrapper struct {
 func (bot *Bot) OnEvent(event string, handler BotAction) {
 	handlers, ok := bot.Handlers[event]
 	if !ok {
-		handlers make([]BotAction, 0)
+		handlers = make([]BotAction, 0)
 	}
 	handlers = append(handlers, handler)
 	bot.Handlers[event] = handlers
