@@ -9,6 +9,29 @@ type messageWrapper struct {
 	status  Status
 }
 
+func (bot *Bot) OnEvent(event string, handler BotAction) {
+	handlers, ok := bot.Handlers[event]
+	if !ok {
+		handlers make([]BotAction, 0)
+	}
+	handlers = append(handlers, handler)
+	bot.Handlers[event] = handlers
+}
+
+func (bot *Bot) OnEventWithSubtype(event, subtype string, handler BotAction) {
+	subtypeMap, ok := bot.Subhandlers[event]
+	if !ok {
+		subtypeMap = make(map[string]([]BotAction))
+		bot.Subhandlers[event] = subtypeMap
+	}
+	handlers, ok := bot.Subhandlers[event][subtype]
+	if !ok {
+		handlers = make([]BotAction, 0)
+	}
+	handlers = append(handlers, handler)
+	bot.Subhandlers[event][subtype] = handlers
+}
+
 func unpackEvent(bytes []byte) (map[string]interface{}, error) {
 	var message map[string]interface{}
 	err := json.Unmarshal(bytes, &message)
