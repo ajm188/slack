@@ -8,6 +8,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const (
+	VERSION = "0.0.1"
+)
+
 type Bot struct {
 	Token       string
 	Name        string
