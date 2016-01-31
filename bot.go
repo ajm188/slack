@@ -10,7 +10,7 @@ import (
 
 const (
 	// Version is the semantic version of this library.
-	Version = "0.1.0"
+	Version = "0.1.1"
 )
 
 // Bot encapsulates all the data needed to interact with Slack.
