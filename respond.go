@@ -5,6 +5,15 @@ import (
 	"regexp"
 )
 
+func Respond(text string) BotAction {
+	closure := func(bot *Bot, event map[string]interface{}) (*Message, Status) {
+		user := event["user"].(string)
+		channel := event["channel"].(string)
+		return bot.Mention(user, text, channel), CONTINUE
+	}
+	return closure
+}
+
 func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 	namePattern := fmt.Sprintf("\\A%s|<@%s>:? ", bot.Name, bot.ID)
 	nameRe := regexp.MustCompile(namePattern)
