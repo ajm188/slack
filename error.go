@@ -1,9 +1,9 @@
 package slack
 
-type SlackError struct {
+type Error struct {
 	Message string
 }
 
-func (err *SlackError) Error() string {
+func (err *Error) Error() string {
 	return err.Message
 }

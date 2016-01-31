@@ -22,7 +22,7 @@ func (bot *Bot) OpenDirectMessage(userID string) (string, error) {
 	success := payload["ok"].(bool)
 	if !success {
 		logOpenDMError(payload, userID, bot.Users[userID])
-		return "", &SlackError{"could not open direct message"}
+		return "", &Error{"could not open direct message"}
 	}
 	channel := payload["channel"].(map[string]interface{})
 	return channel["id"].(string), nil

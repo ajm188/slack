@@ -41,7 +41,7 @@ func (bot *Bot) Start() error {
 	}
 	success, ok := payload["ok"].(bool)
 	if !(ok && success) {
-		return &SlackError{"could not connect to RTM API"}
+		return &Error{"could not connect to RTM API"}
 	}
 	websocketURL, _ := payload["url"].(string)
 	self := payload["self"].(map[string]interface{})
