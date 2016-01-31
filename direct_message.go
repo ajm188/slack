@@ -13,13 +13,17 @@ func (bot *Bot) OpenDirectMessage(userID string) (string, error) {
 	}
 	success := payload["ok"].(bool)
 	if !success {
-		log.WithFields(log.Fields{
-			"payload": payload,
-			"userID":  userID,
-			"nick":    bot.Users[userID],
-		}).Error("Failed to open direct message.")
+		logOpenDMError(payload, userID, bot.Users[userID])
 		return "", &SlackError{"could not open direct message"}
 	}
 	channel := payload["channel"].(map[string]interface{})
 	return channel["id"].(string), nil
+}
+
+func logOpenDMError(payload map[string]interface{}, userID, nick string) {
+	log.WithFields(log.Fields{
+		"payload": payload,
+		"userID":  userID,
+		"nick":    nick,
+	}).Error("Failed to open direct message.")
 }
