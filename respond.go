@@ -14,6 +14,8 @@ func Respond(text string) BotAction {
 	return closure
 }
 
+// RespondRegexp functions exactly as Respond, but instead takes a compiled
+// regexp instead of a string.
 func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 	namePattern := fmt.Sprintf("\\A%s|<@%s>:? ", bot.Name, bot.ID)
 	nameRe := regexp.MustCompile(namePattern)
@@ -37,6 +39,8 @@ func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 	bot.Handlers["message"] = messageHandlers
 }
 
+// Respond registers the given handler to fire on "message" events with no
+// subtype, which address the bot directly and match the given text.
 func (bot *Bot) Respond(text string, handler BotAction) {
 	re := regexp.MustCompile(text)
 	bot.RespondRegexp(re, handler)
