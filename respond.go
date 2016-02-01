@@ -18,15 +18,18 @@ func Respond(text string) BotAction {
 // RespondRegexp functions exactly as Respond, but instead takes a compiled
 // regexp instead of a string.
 func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
-	namePattern := fmt.Sprintf("\\A%s|<@%s>:? ", bot.Name, bot.ID)
-	nameRe := regexp.MustCompile(namePattern)
 	closure := func(self *Bot, event map[string]interface{}) (*Message, Status) {
+		name := regexp.MustCompile(fmt.Sprintf("\\A%s:? ", self.Name))
+		id := regexp.MustCompile(fmt.Sprintf("\\A<@%s>:? ", self.ID))
 		text := event["text"].(string)
-		match := nameRe.FindStringIndex(text)
+		match := name.FindStringIndex(text)
 		if match == nil {
-			return nil, Continue
+			match = id.FindStringIndex(text)
+			if match == nil {
+				return nil, Continue
+			}
 		}
-		unmatchedText := text[match[1]+1:]
+		unmatchedText := text[match[1]:]
 		if re.MatchString(unmatchedText) {
 			return handler(self, event)
 		}
