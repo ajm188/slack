@@ -59,7 +59,7 @@ package main
 
 func main() {
     bot := slack.NewBot("")
-    bot.Respond("hi!", slack.Respond("hi!))
+    bot.Respond("hi!", slack.Respond("hi!"))
     bot.Start()
 }
 ```
