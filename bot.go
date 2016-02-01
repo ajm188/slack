@@ -10,7 +10,7 @@ import (
 
 const (
 	// Version is the semantic version of this library.
-	Version = "0.1.1"
+	Version = "0.1.2"
 )
 
 // Bot encapsulates all the data needed to interact with Slack.
@@ -68,6 +68,10 @@ func (bot *Bot) Start() error {
 	}
 	bot.Name = self["name"].(string)
 	bot.ID = self["id"].(string)
+	log.WithFields(log.Fields{
+		"id":   bot.ID,
+		"name": bot.Name,
+	}).Info("bot authenticated")
 	return bot.connect(websocketURL)
 }
 
