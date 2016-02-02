@@ -21,7 +21,11 @@ func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 	closure := func(self *Bot, event map[string]interface{}) (*Message, Status) {
 		name := regexp.MustCompile(fmt.Sprintf("\\A%s:? ", self.Name))
 		id := regexp.MustCompile(fmt.Sprintf("\\A<@%s>:? ", self.ID))
-		text := event["text"].(string)
+		maybeText := event["text"]
+		if maybeText == nil {
+			return nil, Continue
+		}
+		text = maybeText.(string)
 		match := name.FindStringIndex(text)
 		if match == nil {
 			match = id.FindStringIndex(text)
