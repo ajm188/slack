@@ -73,7 +73,7 @@ package main
 
 func main() {
     bot := slack.NewBot("")
-    bot.Listen("ship ?it??", slack.React("shipit"))
+    bot.Listen("ship ?it\\?", slack.React("shipit"))
     bot.Start()
 }
 ```
