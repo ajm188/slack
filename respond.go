@@ -25,7 +25,7 @@ func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 		if maybeText == nil {
 			return nil, Continue
 		}
-		text = maybeText.(string)
+		text := maybeText.(string)
 		match := name.FindStringIndex(text)
 		if match == nil {
 			match = id.FindStringIndex(text)
