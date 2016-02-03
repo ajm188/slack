@@ -3,6 +3,8 @@ package slack
 import (
 	"fmt"
 	"regexp"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 // Respond creates a BotAction which responds to the passed-in event with text.
@@ -26,17 +28,24 @@ func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 			return nil, Continue
 		}
 		text := maybeText.(string)
+		logger := log.WithFields(log.Fields{
+			"text":  text,
+			"regex": re,
+		})
 		match := name.FindStringIndex(text)
 		if match == nil {
 			match = id.FindStringIndex(text)
 			if match == nil {
+				logger.Info("NO MENTION. Not invoking handler.")
 				return nil, Continue
 			}
 		}
 		unmatchedText := text[match[1]:]
 		if re.MatchString(unmatchedText) {
+			logger.Info("MATCH. Invoking handler.")
 			return handler(self, event)
 		}
+		logger.Info("NO MATCH. Not invoking handler.")
 		return nil, Continue
 	}
 	messageHandlers, ok := bot.Handlers["message"]
