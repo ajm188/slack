@@ -2,6 +2,8 @@ package slack
 
 import (
 	"regexp"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 // ListenRegexp functions exactly as Listen, but instead takes a compiled
@@ -12,9 +14,15 @@ func (bot *Bot) ListenRegexp(re *regexp.Regexp, handler BotAction) {
 		if !ok {
 			return nil, Continue
 		}
+		logger := log.WithFields(log.Fields{
+			"text":  text,
+			"regex": re,
+		})
 		if re.MatchString(text) {
+			logger.Info("MATCH. Invoking handler.")
 			return handler(self, event)
 		}
+		logger.Info("NO MATCH. Not invoking handler.")
 		return nil, Continue
 	}
 	messageHandlers, ok := bot.Handlers["message"]
