@@ -51,11 +51,15 @@ func (bot *Bot) handle(event map[string]interface{}) []messageWrapper {
 	eventSubtype, hasSubtype := event["subtype"].(string)
 
 	if hasSubtype {
-		subhandlers, ok := bot.Subhandlers[eventType][eventSubtype]
+		subhandlerMap, ok := bot.Subhandlers[eventType]
 		if ok {
-			for _, subhandler := range subhandlers {
-				message, status := subhandler(bot, event)
-				wrappers = append(wrappers, messageWrapper{message, status})
+			subhandlers, ok := subhandlerMap[eventSubtype]
+			if ok {
+				for _, subhandler := range subhandlers {
+					message, status := subhandler(bot, event)
+					wrappers = append(wrappers,
+						messageWrapper{message, status})
+				}
 			}
 		}
 	}
