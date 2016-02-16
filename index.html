@@ -1,99 +1,132 @@
-<h1>Slack</h1>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Slack</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-<a href="https://godoc.org/github.com/ajm188/slack">
-  <img alt="GoDoc" src="https://godoc.org/github.com/ajm188/slack?status.svg"/>
-</a>
+    <link rel="stylesheet" type="text/css" href="/css/font-awesome/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/tufte.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 
-<h2>Installation</h2>
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new
+      Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-73716105-1', 'auto');
+      ga('send', 'pageview', {
+      'page': 'http://www.fixedpoint.xyz/slack',
+      'title': 'Slack',
+      });
+    </script>
+    <!-- End Google Analytics -->
+  </head>
 
-<code>go get github.com/ajm188/slack</code>
+  <body>
+    <h1>Slack</h1>
 
-<h2>Usage</h2>
-<h3>Starting the Bot</h3>
+    <a href="https://godoc.org/github.com/ajm188/slack">
+      <img alt="GoDoc"
+      src="https://godoc.org/github.com/ajm188/slack?status.svg"/>
+    </a>
 
-<pre class="code">
-  package main
+    <h2>Installation</h2>
 
-  import (
-    "fmt"
+    <code>go get github.com/ajm188/slack</code>
 
-    "github.com/ajm188/slack"
-  )
+    <h2>Usage</h2>
+    <h3>Starting the Bot</h3>
 
-  func main() {
-    bot := slack.NewBot("my_slack_token")
-    err := bot.Start()
-    if err != nil {
-      fmt.Println(err)
-    }
-  }
-</pre>
+    <pre class="code">
+      package main
 
-<p>
-Note that you need to pass your Slack token to the bot, so your bot can
-authenticate with the Slack API.
-</p>
+      import (
+        "fmt"
 
-<h3>Simple Response</h3>
+        "github.com/ajm188/slack"
+      )
 
-<p>
-  The design of <code>slack</code> is built around a handler pattern. The bot
-  listens for incoming events from the Slack RTM API, and then invokes any
-  handlers for that type of event.
-</p>
+      func main() {
+        bot := slack.NewBot("my_slack_token")
+        err := bot.Start()
+        if err != nil {
+          fmt.Println(err)
+        }
+      }
+    </pre>
 
-<p>
-  A valid handler takes a reference to the bot and the event and returns a
-  reference to a Message, and a Status, which tells the main loop whether or not
-  to continue interacting with the RTM API.
-</p>
+    <p>
+      Note that you need to pass your Slack token to the bot, so your bot can
+      authenticate with the Slack API.
+    </p>
 
-<p>
-  <code>slack</code> has some factory methods for constructing handlers for
-  common operations, such as responding to a message or posting a reaction to a
-  message.  If you need something more fine-grained, feel free to write your
-  own.
-</p>
+    <h3>Simple Response</h3>
 
-<p>
-  There are also convenience methods for registering handlers specifically for
-  "message" type events. The Bot defines instance methods `Listen` - which
-  finds text that matches the given pattern - and `Respond` which finds text
-  that first mentions the bot by name and then matches the given pattern. These
-  helper methods have `Regexp` variants which can take a compiled regular
-  expression directly instead of a string.
-</p>
+    <p>
+      The design of <code>slack</code> is built around a handler pattern. The
+      bot listens for incoming events from the Slack RTM API, and then invokes
+      any handlers for that type of event.
+    </p>
 
-<pre class="code">
-package main
+    <p>
+      A valid handler takes a reference to the bot and the event and returns a
+      reference to a Message, and a Status, which tells the main loop whether
+      or not to continue interacting with the RTM API.
+    </p>
 
-// ... imports blah, blah
+    <p>
+      <code>slack</code> has some factory methods for constructing handlers for
+      common operations, such as responding to a message or posting a reaction
+      to a message.  If you need something more fine-grained, feel free to
+      write your own.
+    </p>
 
-func main() {
-    bot := slack.NewBot("")
-    bot.Respond("hi!", slack.Respond("hi!"))
-    bot.Start()
-}
-</pre>
+    <p>
+      There are also convenience methods for registering handlers specifically
+      for "message" type events. The Bot defines instance methods `Listen` -
+      which finds text that matches the given pattern - and `Respond` which
+      finds text that first mentions the bot by name and then matches the given
+      pattern. These helper methods have `Regexp` variants which can take a
+      compiled regular expression directly instead of a string.
+    </p>
 
-<h3>Adding a Reaction</h3>
+    <pre class="code">
+      package main
 
-<pre class="code">
-package main
+      // ... imports blah, blah
 
-// imports
+      func main() {
+        bot := slack.NewBot("")
+        bot.Respond("hi!", slack.Respond("hi!"))
+        bot.Start()
+      }
+    </pre>
 
-func main() {
-    bot := slack.NewBot("")
-    bot.Listen("ship ?it\\?", slack.React("shipit"))
-    bot.Start()
-}
-</pre>
+    <h3>Adding a Reaction</h3>
 
-<h3>Logging</h3>
+    <pre class="code">
+      package main
 
-<p>
-  <code>slack</code>
-  uses <a href="https://github.com/Sirupsen/logrus">logrus</a> for
-  logging. Feel free to set your log level appropriately in an `init` function.
-</p>
+      // imports
+
+      func main() {
+        bot := slack.NewBot("")
+        bot.Listen("ship ?it\\?", slack.React("shipit"))
+        bot.Start()
+      }
+    </pre>
+
+    <h3>Logging</h3>
+
+    <p>
+      <code>slack</code>
+      uses <a href="https://github.com/Sirupsen/logrus">logrus</a> for
+      logging. Feel free to set your log level appropriately in an `init`
+      function.
+    </p>
+  </body>
+</html>
