@@ -27,106 +27,118 @@
   </head>
 
   <body>
-    <h1>Slack</h1>
+    <article>
+      <h1>Slack</h1>
 
-    <a href="https://godoc.org/github.com/ajm188/slack">
-      <img alt="GoDoc"
-      src="https://godoc.org/github.com/ajm188/slack?status.svg"/>
-    </a>
+      <a href="https://godoc.org/github.com/ajm188/slack"
+        style="background=none;text-shadow=none;"> <img alt="GoDoc"
+        src="https://godoc.org/github.com/ajm188/slack?status.svg"/>
+      </a>
 
-    <h2>Installation</h2>
+      <section>
+        <h2>Installation</h2>
 
-    <code>go get github.com/ajm188/slack</code>
+        <p>
+          <code>go get github.com/ajm188/slack</code>
+        </p>
 
-    <h2>Usage</h2>
-    <h3>Starting the Bot</h3>
+      </section>
 
-    <pre class="code">
-      package main
+      <section>
+        <h2>Usage</h2>
+        <h3>Starting the Bot</h3>
 
-      import (
-        "fmt"
+        <p>
+          <pre class="code">
+            package main
 
-        "github.com/ajm188/slack"
-      )
+            import (
+                "fmt"
 
-      func main() {
-        bot := slack.NewBot("my_slack_token")
-        err := bot.Start()
-        if err != nil {
-          fmt.Println(err)
-        }
-      }
-    </pre>
+                "github.com/ajm188/slack"
+            )
 
-    <p>
-      Note that you need to pass your Slack token to the bot, so your bot can
-      authenticate with the Slack API.
-    </p>
+            func main() {
+                bot := slack.NewBot("my_slack_token")
+                err := bot.Start()
+                if err != nil {
+                    fmt.Println(err)
+                }
+            }
+          </pre>
+        </p>
 
-    <h3>Simple Response</h3>
+        <p>
+          Note that you need to pass your Slack token to the bot, so your bot
+          can authenticate with the Slack API.
+        </p>
 
-    <p>
-      The design of <code>slack</code> is built around a handler pattern. The
-      bot listens for incoming events from the Slack RTM API, and then invokes
-      any handlers for that type of event.
-    </p>
+        <h3>Simple Response</h3>
 
-    <p>
-      A valid handler takes a reference to the bot and the event and returns a
-      reference to a Message, and a Status, which tells the main loop whether
-      or not to continue interacting with the RTM API.
-    </p>
+        <p>
+          The design of <code>slack</code> is built around a handler
+          pattern. The bot listens for incoming events from the Slack RTM API,
+          and then invokes any handlers for that type of event.
+        </p>
 
-    <p>
-      <code>slack</code> has some factory methods for constructing handlers for
-      common operations, such as responding to a message or posting a reaction
-      to a message.  If you need something more fine-grained, feel free to
-      write your own.
-    </p>
+        <p>
+          A valid handler takes a reference to the bot and the event and
+          returns a reference to a Message, and a Status, which tells the main
+          loop whether or not to continue interacting with the RTM API.
+        </p>
 
-    <p>
-      There are also convenience methods for registering handlers specifically
-      for "message" type events. The Bot defines instance methods `Listen` -
-      which finds text that matches the given pattern - and `Respond` which
-      finds text that first mentions the bot by name and then matches the given
-      pattern. These helper methods have `Regexp` variants which can take a
-      compiled regular expression directly instead of a string.
-    </p>
+        <p>
+          <code>slack</code> has some factory methods for constructing handlers
+          for common operations, such as responding to a message or posting a
+          reaction to a message.  If you need something more fine-grained, feel
+          free to write your own.
+        </p>
 
-    <pre class="code">
-      package main
+        <p>
+          There are also convenience methods for registering handlers
+          specifically for "message" type events. The Bot defines instance
+          methods `Listen` - which finds text that matches the given pattern -
+          and `Respond` which finds text that first mentions the bot by name
+          and then matches the given pattern. These helper methods have
+          `Regexp` variants which can take a compiled regular expression
+          directly instead of a string.
+        </p>
 
-      // ... imports blah, blah
+        <pre class="code">
+          package main
 
-      func main() {
-        bot := slack.NewBot("")
-        bot.Respond("hi!", slack.Respond("hi!"))
-        bot.Start()
-      }
-    </pre>
+          // ... imports blah, blah
 
-    <h3>Adding a Reaction</h3>
+          func main() {
+              bot := slack.NewBot("")
+              bot.Respond("hi!", slack.Respond("hi!"))
+              bot.Start()
+          }
+        </pre>
 
-    <pre class="code">
-      package main
+        <h3>Adding a Reaction</h3>
 
-      // imports
+        <pre class="code">
+          package main
 
-      func main() {
-        bot := slack.NewBot("")
-        bot.Listen("ship ?it\\?", slack.React("shipit"))
-        bot.Start()
-      }
-    </pre>
+          // imports
 
-    <h3>Logging</h3>
+          func main() {
+              bot := slack.NewBot("")
+              bot.Listen("ship ?it\\?", slack.React("shipit"))
+              bot.Start()
+          }
+        </pre>
 
-    <p>
-      <code>slack</code>
-      uses <a href="https://github.com/Sirupsen/logrus">logrus</a> for
-      logging. Feel free to set your log level appropriately in an `init`
-      function.
-    </p>
+        <h3>Logging</h3>
+
+        <p>
+          <code>slack</code>
+          uses <a href="https://github.com/Sirupsen/logrus">logrus</a> for
+          logging. Feel free to set your log level appropriately in an `init`
+          function.
+        </p>
+      </section>
+    </article>
   </body>
 </html>
