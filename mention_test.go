@@ -23,9 +23,7 @@ func TestMention(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actualMessage := bot.Mention(test.nick, test.text, test.channel)
-		actual := actualMessage.toMap()
-		test.expected["id"] = actual["id"]
-		compareMapsString(test.expected, actual, t)
+		actual := bot.Mention(test.nick, test.text, test.channel)
+		compareMessages(test.expected, actual.toMap(), t)
 	}
 }

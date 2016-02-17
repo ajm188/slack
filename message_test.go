@@ -28,9 +28,13 @@ func TestPrivate_toMap(t *testing.T) {
 
 	for _, test := range tests {
 		actual := test.message.toMap()
-		test.expected["id"] = actual["id"]
-		compareMapsString(test.expected, actual, t)
+		compareMessages(test.expected, actual, t)
 	}
+}
+
+func compareMessages(expected, actual map[string]string, t *testing.T) {
+	expected["id"] = actual["id"]
+	compareMapsString(expected, actual, t)
 }
 
 func compareMapsString(expected, actual map[string]string, t *testing.T) {
