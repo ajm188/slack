@@ -1,7 +1,6 @@
-package slack_test
+package slack
 
 import (
-	. "."
 	"testing"
 )
 
