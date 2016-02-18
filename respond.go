@@ -48,12 +48,7 @@ func (bot *Bot) RespondRegexp(re *regexp.Regexp, handler BotAction) {
 		logger.Info("NO MATCH. Not invoking handler.")
 		return nil, Continue
 	}
-	messageHandlers, ok := bot.Handlers["message"]
-	if !ok {
-		messageHandlers = make([]BotAction, 0)
-	}
-	messageHandlers = append(messageHandlers, closure)
-	bot.Handlers["message"] = messageHandlers
+	bot.OnEvent("message", closure)
 }
 
 // Respond registers the given handler to fire on "message" events with no
