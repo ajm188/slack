@@ -1,0 +1,16 @@
+engines:
+    fixme:
+        enabled: true
+    gofmt:
+        enabled: true
+    golint:
+        enabled: true
+    govet:
+        enabled: true
+
+ratings:
+    paths:
+    - .*([^t]|t[^e]|te[^s]|tes[^t])\.go
+
+exclude_paths:
+- "*_test.go"
