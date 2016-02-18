@@ -1,9 +1,5 @@
 package slack
 
-import (
-	"encoding/json"
-)
-
 type messageWrapper struct {
 	message *Message
 	status  Status
@@ -33,15 +29,6 @@ func (bot *Bot) OnEventWithSubtype(event, subtype string, handler BotAction) {
 	}
 	handlers = append(handlers, handler)
 	bot.Subhandlers[event][subtype] = handlers
-}
-
-func unpackEvent(bytes []byte) (map[string]interface{}, error) {
-	var message map[string]interface{}
-	err := json.Unmarshal(bytes, &message)
-	if err != nil {
-		return nil, err
-	}
-	return message, nil
 }
 
 func (bot *Bot) handle(event map[string]interface{}) []messageWrapper {
