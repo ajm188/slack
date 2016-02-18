@@ -106,4 +106,49 @@ func TestPrivate_handle_noSubtype(t *testing.T) {
 }
 
 func TestPrivate_handle_subtype(t *testing.T) {
+	event := map[string]interface{}{
+		"type":    "message",
+		"subtype": "channel_join",
+	}
+	bot := NewBot("token")
+
+	assert := func(expected, actual int, t *testing.T) {
+		if expected != actual {
+			t.Errorf("Error. Expecting %i. Got %i.", expected, actual)
+		}
+	}
+
+	// no handlers
+	wrappers := bot.handle(event)
+	assert(0, len(wrappers), t)
+
+	// one subevent handler
+	bot.OnEventWithSubtype("message", "channel_join", shutdownHandler)
+	wrappers = bot.handle(event)
+	assert(1, len(wrappers), t)
+
+	// one relevant, one irrelevant
+	bot.OnEventWithSubtype("message", "not_relevant", shutdownHandler)
+	wrappers = bot.handle(event)
+	assert(1, len(wrappers), t)
+
+	// adding regular event handler
+	bot.OnEvent("message", shutdownHandler)
+	wrappers = bot.handle(event)
+	assert(2, len(wrappers), t)
+
+	// second subevent handler
+	bot.OnEventWithSubtype("message", "channel_join", shutdownHandler)
+	wrappers = bot.handle(event)
+	assert(3, len(wrappers), t)
+}
+
+func TestPrivate_handle_noType(t *testing.T) {
+	event := map[string]interface{}{"foo": "bar"}
+	bot := NewBot("token")
+	bot.OnEvent("bar", shutdownHandler)
+	wrappers := bot.handle(event)
+	if len(wrappers) != 0 {
+		t.Errorf("Error. Expecting 0 wrappers. Found %i.", len(wrappers))
+	}
 }
