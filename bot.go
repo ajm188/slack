@@ -96,7 +96,7 @@ func (bot *Bot) loop(conn *websocket.Conn) {
 		if messageType == websocket.BinaryMessage {
 			continue // ignore binary messages
 		}
-		event, err := unpackEvent(bytes)
+		event, err := unpackJSON(bytes)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"raw bytes": bytes,
