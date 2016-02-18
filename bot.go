@@ -15,26 +15,33 @@ const (
 
 // Bot encapsulates all the data needed to interact with Slack.
 type Bot struct {
-	Token       string
-	Name        string
-	ID          string
-	Handlers    map[string]([]BotAction)
-	Subhandlers map[string](map[string]([]BotAction))
-	Users       map[string]string
-	Channels    map[string]string
+	Token        string
+	Name         string
+	ID           string
+	Handlers     map[string]([]BotAction)
+	Subhandlers  map[string](map[string]([]BotAction))
+	Users        map[string]string
+	Channels     map[string]string
+	reconnectURL string
 }
 
 // NewBot constructs a new bot with the passed-in Slack API token.
 func NewBot(token string) *Bot {
 	return &Bot{
-		Token:       token,
-		Name:        "",
-		ID:          "",
-		Handlers:    make(map[string]([]BotAction)),
-		Subhandlers: make(map[string](map[string]([]BotAction))),
-		Users:       make(map[string]string),
-		Channels:    make(map[string]string),
+		Token:        token,
+		Name:         "",
+		ID:           "",
+		Handlers:     make(map[string]([]BotAction)),
+		Subhandlers:  make(map[string](map[string]([]BotAction))),
+		Users:        make(map[string]string),
+		Channels:     make(map[string]string),
+		reconnectURL: "",
 	}
+}
+
+func StoreReconnectURL(bot *Bot, event map[string]interface{}) (*Message, Status) {
+	bot.reconnectURL = event["url"].(string)
+	return nil, Continue
 }
 
 // Start initiates the bot's interaction with Slack. It obtains a websockect
@@ -72,26 +79,34 @@ func (bot *Bot) Start() error {
 		"id":   bot.ID,
 		"name": bot.Name,
 	}).Info("bot authenticated")
-	return bot.connect(websocketURL)
-}
-
-func (bot *Bot) connect(websocketURL string) error {
-	dialer := websocket.Dialer{}
-	conn, _, err := dialer.Dial(websocketURL, http.Header{})
-	if err != nil {
-		return err
+	bot.OnEvent("reconnect_url", StoreReconnectURL)
+	for {
+		reconnect, err := bot.connect(websocketURL)
+		if reconnect && bot.reconnectURL != "" {
+			websocketURL = bot.reconnectURL
+		} else {
+			return err
+		}
 	}
-	bot.loop(conn)
 	return nil
 }
 
-func (bot *Bot) loop(conn *websocket.Conn) {
+func (bot *Bot) connect(websocketURL string) (bool, error) {
+	dialer := websocket.Dialer{}
+	conn, _, err := dialer.Dial(websocketURL, http.Header{})
+	if err != nil {
+		return false, err
+	}
+	return bot.loop(conn), nil
+}
+
+func (bot *Bot) loop(conn *websocket.Conn) bool {
+	defer conn.Close()
 	for {
 		messageType, bytes, err := conn.ReadMessage()
 		if err != nil {
 			// ReadMessage returns an error if the connection is closed
-			conn.Close()
-			return
+			return false
 		}
 		if messageType == websocket.BinaryMessage {
 			continue // ignore binary messages
@@ -107,11 +122,14 @@ func (bot *Bot) loop(conn *websocket.Conn) {
 		log.WithFields(log.Fields{
 			"event": event,
 		}).Info("received event")
+		eventType, ok := event["type"]
+		if ok && eventType.(string) == "team_migration_started" {
+			return true
+		}
 		wrappers := bot.handle(event)
 		closeConnection := sendResponses(wrappers, conn)
 		if closeConnection {
-			conn.Close()
-			return
+			return false
 		}
 	}
 }

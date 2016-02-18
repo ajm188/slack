@@ -13,7 +13,7 @@ func TestABotHasAToken(t *testing.T) {
 
 func TestPrivate_connect(t *testing.T) {
 	bot := NewBot("token")
-	err := bot.connect("junk")
+	_, err := bot.connect("junk")
 	if err == nil {
 		t.Error("Error. Expecting error. Got nil")
 	}
