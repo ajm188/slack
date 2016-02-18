@@ -1,5 +1,6 @@
 # slack
 
+[![Build Status](https://travis-ci.org/ajm188/slack.svg?branch=master)](https://travis-ci.org/ajm188/slack)
 [![GoDoc](https://godoc.org/github.com/ajm188/slack?status.svg)](https://godoc.org/github.com/ajm188/slack)
 
 ## Installation
