@@ -49,6 +49,22 @@ func TestListen(t *testing.T) {
 	}
 }
 
+func TestListenNoEventText(t *testing.T) {
+	log.SetLevel(1) // TODO: see above
+
+	bot := NewBot("token")
+	bot.Listen("hi", shutdownHandler)
+	handler := bot.Handlers["message"][0]
+	event := map[string]interface{}{}
+	actualMessage, actualStatus := handler(nil, event)
+	if actualMessage != nil {
+		t.Errorf("Error. Expected nil. Got %v.", actualMessage)
+	}
+	if Continue != actualStatus {
+		t.Errorf("Error. Expected %i. Got %i", Continue, actualStatus)
+	}
+}
+
 func TestListenRegexp(t *testing.T) {
 	log.SetLevel(1) // TODO: see above
 	re := regexp.MustCompile("lo?l")
