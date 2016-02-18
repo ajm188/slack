@@ -8,7 +8,7 @@ import (
 )
 
 func TestRespondGeneratedClosure(t *testing.T) {
-	log.SetLevel(1) // TODO: see listen_test.go
+	log.SetLevel(log.PanicLevel)
 	text := "hi there"
 	var tests = []struct {
 		user, channel   string
@@ -48,7 +48,7 @@ func TestRespondGeneratedClosure(t *testing.T) {
 }
 
 func TestRespond(t *testing.T) {
-	log.SetLevel(1) // TODO: see above
+	log.SetLevel(log.PanicLevel)
 	var tests = []struct {
 		pattern         string
 		eventText       string
@@ -85,7 +85,7 @@ func TestRespond(t *testing.T) {
 }
 
 func TestRespondNoEventText(t *testing.T) {
-	log.SetLevel(1) // TODO: see above
+	log.SetLevel(log.PanicLevel)
 
 	bot := NewBot("token")
 	bot.Name = "testbot"
@@ -102,7 +102,7 @@ func TestRespondNoEventText(t *testing.T) {
 }
 
 func TestRespondRegexp(t *testing.T) {
-	log.SetLevel(1) // TODO: see above
+	log.SetLevel(log.PanicLevel)
 	re := regexp.MustCompile("lo?l")
 
 	var tests = []struct {

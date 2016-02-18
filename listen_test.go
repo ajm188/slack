@@ -14,7 +14,7 @@ func shutdownHandler(_ *Bot, _ map[string]interface{}) (*Message, Status) {
 }
 
 func TestListen(t *testing.T) {
-	log.SetLevel(1) // TODO: find the actual name
+	log.SetLevel(log.PanicLevel)
 	var tests = []struct {
 		pattern         string
 		eventText       string
@@ -50,7 +50,7 @@ func TestListen(t *testing.T) {
 }
 
 func TestListenNoEventText(t *testing.T) {
-	log.SetLevel(1) // TODO: see above
+	log.SetLevel(log.PanicLevel)
 
 	bot := NewBot("token")
 	bot.Listen("hi", shutdownHandler)
@@ -66,7 +66,7 @@ func TestListenNoEventText(t *testing.T) {
 }
 
 func TestListenRegexp(t *testing.T) {
-	log.SetLevel(1) // TODO: see above
+	log.SetLevel(log.PanicLevel)
 	re := regexp.MustCompile("lo?l")
 
 	var tests = []struct {
