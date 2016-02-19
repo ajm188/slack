@@ -60,12 +60,15 @@ func OpenIssue(bot *slack.Bot) {
 			return nil, slack.Continue
 		}
 		issue, _, err := issues.Create(owner, repo, issueRequest)
-		if err != nil {
-			return nil, slack.Continue
-		}
-
 		user := event["user"].(string)
 		channel := event["channel"].(string)
+		if err != nil {
+			message := fmt.Sprintf(
+				"I had some trouble opening an issue. Here was the error I got:\n%v",
+				err)
+			return bot.Mention(user, message, channel), slack.Continue
+		}
+
 		message := fmt.Sprintf(
 			"I created that issue for you. You can view it here: %s",
 			*issue.HTMLURL,
