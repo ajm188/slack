@@ -39,6 +39,9 @@ func NewBot(token string) *Bot {
 	}
 }
 
+// StoreReconnectURL takes a "url" from an event and stores it. This is done so
+// that when Slack migrates a team to a new host, the bot can use the reconnect
+// URL to reattach to the team.
 func StoreReconnectURL(bot *Bot, event map[string]interface{}) (*Message, Status) {
 	bot.reconnectURL = event["url"].(string)
 	return nil, Continue
