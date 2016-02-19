@@ -42,6 +42,10 @@ func Config() *oauth2.Config {
 	}
 }
 
+// Token constructs a basic token, with the bare minimum amount of information
+// necessary to authenticate with Github. It uses the package-wide AccessToken,
+// and sets the token to never expire. "TokenType" and "RefreshToken" fields
+// are left blank.
 func Token() *oauth2.Token {
 	var noExpire time.Time // this sets noExpire to the zero Time value
 	return &oauth2.Token{
