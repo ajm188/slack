@@ -31,9 +31,7 @@ func (bot *Bot) OnEventWithSubtype(event, subtype string, handler BotAction) {
 	bot.Subhandlers[event][subtype] = handlers
 }
 
-func (bot *Bot) handle(event map[string]interface{}) []messageWrapper {
-	wrappers := make([]messageWrapper, 0)
-
+func (bot *Bot) handle(event map[string]interface{}) (wrappers []messageWrapper) {
 	eventType, hasType := event["type"].(string)
 	eventSubtype, hasSubtype := event["subtype"].(string)
 
@@ -59,5 +57,5 @@ func (bot *Bot) handle(event map[string]interface{}) []messageWrapper {
 			}
 		}
 	}
-	return wrappers
+	return
 }
