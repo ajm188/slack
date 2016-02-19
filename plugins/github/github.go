@@ -70,7 +70,7 @@ func OpenIssue(bot *slack.Bot) {
 			"I created that issue for you. You can view it here: %s",
 			*issue.HTMLURL,
 		)
-		return bot.Mention(user, channel, message), slack.Continue
+		return bot.Mention(user, message, channel), slack.Continue
 	}
 
 	bot.RespondRegexp(repoRe, handler)
