@@ -32,6 +32,8 @@ func DefaultClient() *github.Client {
 	return github.NewClient(Config().Client(oauth2.NoContext, Token()))
 }
 
+// Config returns an oauth config object that can be used to generate a client
+// for communicating with Github.
 func Config() *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     ClientID,
