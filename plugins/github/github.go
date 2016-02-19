@@ -1,3 +1,25 @@
+/*
+Package github provides a plugin for building Github integrations into
+github.com/ajm188/slack.
+
+The package exports a number of package-wide variables, which may be used to
+configure the parameters used for authenticating with the Github API. See the
+documentation on each variable for what is is used for.
+
+Here is an example of how one might use this library to register a hook that
+opens Github issues:
+
+    import (
+        "github.com/ajm188/slack"
+        "github.com/ajm188/slack/plugins/github"
+    )
+
+    func main() {
+        bot := slack.NewBot(myToken)
+        // configure auth for github plugin
+        github.OpenIssue(bot, nil)
+    }
+*/
 package github
 
 // TODO:
@@ -15,11 +37,34 @@ import (
 )
 
 var (
-	ClientID     string
+	// ClientID is issued by Github when you register an application. You
+	// should register an application for your bot, and set the ID before
+	// creating a client to authenticate with Github.
+	ClientID string
+	// ClientSecret is the secret key used to verify your registered
+	// application. You should set the secret before creating a client to
+	// authenticate with Github.
 	ClientSecret string
-	AccessToken  string
-	RedirectURL  string
-	Scopes       []string
+	// AccessToken is an OAuth token for the user you want your Github
+	// interactions to be performed as. The bot will be commenting, opening
+	// issues, etc as the user who owns this token. You should set an access
+	// token before creating a client to authenticate with Github.
+	AccessToken string
+	// RedirectURL is the URL that Github should redirect to after a successful
+	// web authentication. Since the bot does not perform web-based
+	// authentication, this is likely a useless field. More information can be
+	// found at https://developer.github.com/v3/oauth/#redirect-urls.
+	RedirectURL string
+	// Scopes is the list of scopes that the OAuth token should be limited
+	// to. Since the user that created the token can specify the scopes
+	// available to the token when they create it, this field is probably also
+	// useless.
+	Scopes []string
+	// SharedClient is a variable for sharing a single OAuth client among
+	// various handlers. For example, when a call to OpenIssue is made, you may
+	// pass in a client of your own, if you want the issue hook to be handled
+	// by a different Github user. If you do not pass in a client, then the
+	// various hook methods will fall back to using this shared client.
 	SharedClient *github.Client
 )
 
