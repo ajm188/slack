@@ -2,7 +2,6 @@ package github
 
 // TODO:
 // - testing
-// - logging
 
 import (
 	"fmt"
@@ -85,25 +84,33 @@ func extractOwnerAndRepo(text string, re *regexp.Regexp) (string, string, error)
 	return m[1], m[2], nil
 }
 
+func removeQuotes(s string) string {
+	return s[1 : len(s)-1]
+}
+
 func extractIssueArgs(text string, re *regexp.Regexp) (*github.IssueRequest, error) {
-	m := re.FindAllString(text, -1)
+	match := re.FindAllString(text, -1)
+	m := make([]string, len(match))
+	for i, v := range match {
+		m[i] = removeQuotes(v)
+	}
 	if m == nil || len(m) == 0 {
 		return nil, &issueError{text}
 	}
-	var title, body, assignee string
-	title = m[0]
+	var title, body, assignee *string
+	title = &m[0]
 	if len(m) >= 2 {
-		body = m[1]
+		body = &m[1]
 	}
 	if len(m) >= 3 {
-		assignee = m[2]
+		assignee = &m[2]
 	}
 	issueState := "open"
 	request := github.IssueRequest{
-		Title:     &title,
-		Body:      &body,
+		Title:     title,
+		Body:      body,
 		Labels:    nil,
-		Assignee:  &assignee,
+		Assignee:  assignee,
 		State:     &issueState,
 		Milestone: nil,
 	}
