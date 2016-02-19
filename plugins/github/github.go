@@ -23,6 +23,11 @@ var (
 	SharedClient *github.Client
 )
 
+// DefaultClient constructs a Github client based on the variables set in this
+// package (ClientID, ClientSecret, AccessToken). This can be used to quickly
+// create a client when you don't need any customization to the underlying
+// oauth client. It uses the NoContext context from the oauth2 package. See the
+// Token function for the Token it will use.
 func DefaultClient() *github.Client {
 	return github.NewClient(Config().Client(oauth2.NoContext, Token()))
 }
