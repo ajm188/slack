@@ -20,7 +20,12 @@ var (
 	AccessToken  string
 	RedirectURL  string
 	Scopes       []string
+	SharedClient *github.Client
 )
+
+func DefaultClient() *github.Client {
+	return github.NewClient(Config().Client(oauth2.NoContext, Token()))
+}
 
 func Config() *oauth2.Config {
 	return &oauth2.Config{
@@ -42,12 +47,13 @@ func Token() *oauth2.Token {
 	}
 }
 
-func OpenIssue(bot *slack.Bot) {
+func OpenIssue(bot *slack.Bot, client *github.Client) {
 	repoRe := regexp.MustCompile("issue me ([^/ ]+)/([^/ ]+)")
 	argsRe := regexp.MustCompile("(\".*?[^\\\\]\")")
-	oauthClient := Config().Client(oauth2.NoContext, Token())
-	ghClient := github.NewClient(oauthClient)
-	issues := ghClient.Issues
+	if client == nil {
+		client = SharedClient
+	}
+	issues := client.Issues
 
 	handler := func(b *slack.Bot, event map[string]interface{}) (*slack.Message, slack.Status) {
 		text := event["text"].(string)
