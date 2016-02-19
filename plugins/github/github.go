@@ -58,6 +58,25 @@ func Token() *oauth2.Token {
 	}
 }
 
+// OpenIssue registers a handler that will cause the bot to open a github issue
+// based on the event text.
+//
+// The handler is registered as a "Respond", not a "Listen" (see the docs for
+// github.com/ajm188/slack for the difference). The pattern which will cause
+// the handler to fire has the form 'issue me // <owner>/<repo> "<title>"
+// ("<body>" ("<assignee>")?)?'.
+//
+// The function takes as arguments the bot to which it should register the
+// handler, and a reference to a client that can authenticate with Github. If
+// no client is provided, then OpenIssue will fall back to using the
+// package-wide SharedClient.
+//
+// Users should note that an attempt to assign an issue to a Github user that
+// is not a "contributor" on the repository will result in a 422 returned by
+// the Github API. This will prevent the issue from being created.
+//
+// When an issue has successfully been created, the bot will reply to the user
+// which triggered the handler with a link to the issue.
 func OpenIssue(bot *slack.Bot, client *github.Client) {
 	repoRe := regexp.MustCompile("issue me ([^/ ]+)/([^/ ]+)")
 	argsRe := regexp.MustCompile("(\".*?[^\\\\]\")")
