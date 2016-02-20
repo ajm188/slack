@@ -14,7 +14,8 @@ before_install:
     - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 
 install:
-    - go get -d -v github.com/ajm188/slack
+    - go get -d -v github.com/ajm188/slack/...
 
 script:
+    - go test ./...
     - $HOME/gopath/bin/goveralls -service=travis-ci
