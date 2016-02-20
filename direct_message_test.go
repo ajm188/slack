@@ -7,6 +7,7 @@ import (
 )
 
 func TestDirectMessage_failsWithNoToken(t *testing.T) {
+	log.SetLevel(log.PanicLevel)
 	bot := NewBot("")
 	message := bot.DirectMessage("andrew", "hello")
 	if message != nil {
