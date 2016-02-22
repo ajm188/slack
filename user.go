@@ -23,8 +23,15 @@ func UserFromJSON(data map[string]interface{}) *User {
 	nick := data["name"].(string)
 
 	profile := data["profile"].(map[string]interface{})
-	firstName := profile["first_name"].(string)
-	lastName := profile["last_name"].(string)
+	var firstName, lastName string
+	first, ok := profile["first_name"]
+	if ok && first != nil {
+		firstName = first.(string)
+	}
+	last, ok := profile["last_name"]
+	if ok && last != nil {
+		lastName = last.(string)
+	}
 
 	return &User{
 		ID:        id,
