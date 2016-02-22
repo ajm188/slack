@@ -20,7 +20,7 @@ type Bot struct {
 	ID           string
 	Handlers     map[string]([]BotAction)
 	Subhandlers  map[string](map[string]([]BotAction))
-	Users        map[string]string
+	Users        map[string]*User
 	Channels     map[string]string
 	reconnectURL string
 }
@@ -33,7 +33,7 @@ func NewBot(token string) *Bot {
 		ID:           "",
 		Handlers:     make(map[string]([]BotAction)),
 		Subhandlers:  make(map[string](map[string]([]BotAction))),
-		Users:        make(map[string]string),
+		Users:        make(map[string]*User),
 		Channels:     make(map[string]string),
 		reconnectURL: "",
 	}
@@ -70,11 +70,9 @@ func (bot *Bot) Start() error {
 	}
 	users := payload["users"].([]interface{})
 	for _, userMap := range users {
-		user := userMap.(map[string]interface{})
-		userID := user["id"].(string)
-		userName := user["name"].(string)
-		bot.Users[userName] = userID
-		bot.Users[userID] = userName
+		user := UserFromJSON(userMap.(map[string]interface{}))
+		bot.Users[user.Nick] = user
+		bot.Users[user.ID] = user
 	}
 	bot.Name = self["name"].(string)
 	bot.ID = self["id"].(string)
