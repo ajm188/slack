@@ -27,7 +27,12 @@ func (bot *Bot) OpenDirectMessage(userID string) (string, error) {
 	}
 	success := payload["ok"].(bool)
 	if !success {
-		logOpenDMError(payload, userID, bot.Users[userID])
+		var nick string
+		user, ok := bot.Users[userID]
+		if ok {
+			nick = user.Nick
+		}
+		logOpenDMError(payload, userID, nick)
 		return "", &Error{"could not open direct message"}
 	}
 	channel := payload["channel"].(map[string]interface{})
