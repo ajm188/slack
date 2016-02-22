@@ -140,21 +140,36 @@ func OpenIssue(bot *slack.Bot, client *github.Client) {
 		if err != nil {
 			return nil, slack.Continue
 		}
+		userID := event["user"].(string)
+		user, ok := b.Users[userID]
+		if !ok {
+			return nil, slack.Continue
+		}
+		fullName := user.FullName()
+		name := user.Nick
+		if fullName != "" {
+			name += fmt.Sprintf(" (%s)", fullName)
+		}
+		issueCreationMessage := fmt.Sprintf(
+			"\n\n Issue created via slack on behalf of %s",
+			name,
+		)
+		issueBody := (*issueRequest.Body) + issueCreationMessage
+		issueRequest.Body = &issueBody
 		issue, _, err := issues.Create(owner, repo, issueRequest)
-		user := event["user"].(string)
 		channel := event["channel"].(string)
 		if err != nil {
 			message := fmt.Sprintf(
 				"I had some trouble opening an issue. Here was the error I got:\n%v",
 				err)
-			return bot.Mention(user, message, channel), slack.Continue
+			return bot.Mention(userID, message, channel), slack.Continue
 		}
 
 		message := fmt.Sprintf(
 			"I created that issue for you. You can view it here: %s",
 			*issue.HTMLURL,
 		)
-		return bot.Mention(user, message, channel), slack.Continue
+		return bot.Mention(userID, message, channel), slack.Continue
 	}
 
 	bot.RespondRegexp(repoRe, handler)
