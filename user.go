@@ -10,7 +10,10 @@ type User struct {
 func (user *User) FullName() (fullName string) {
 	fullName = user.FirstName
 	if user.LastName != "" {
-		fullName += " " + user.LastName
+		if user.FirstName != "" {
+			fullName += " "
+		}
+		fullName += user.LastName
 	}
 	return
 }
