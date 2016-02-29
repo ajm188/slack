@@ -19,6 +19,14 @@ func (plugin *OpenIssuePlugin) setEnvVar(name, val string) {
 	plugin.envVars[name] = val
 }
 
+func (plugin *OpenIssuePlugin) getEnvVar(name string) string {
+	val, ok := plugin.envVars[name]
+	if !ok {
+		val = ""
+	}
+	return val
+}
+
 // OpenIssue returns a new OpenIssuePlugin. This function can be registered
 // with a *slack.Bot.
 func OpenIssue() slack.Plugin {
