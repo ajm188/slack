@@ -2,6 +2,8 @@ package github
 
 import (
 	"testing"
+
+	"github.com/google/go-github/github"
 )
 
 func TestOpenIssue(t *testing.T) {
@@ -38,4 +40,25 @@ func TestOpenIssue_CanLoad(t *testing.T) {
 	assert(env != nil, t)
 
 	assert(OpenIssue().CanLoad(), t)
+}
+
+func TestOpenIssue_Load(t *testing.T) {
+	dummyIssuesService := github.NewClient(nil).Issues
+	plugin := OpenIssue().(*OpenIssuePlugin)
+	plugin.issues = dummyIssuesService
+
+	plugin.Load(nil)
+	assert(plugin.issues == dummyIssuesService, t)
+
+	env := stubEnv(map[string]string{
+		"GH_CLIENT_ID":     "a",
+		"GH_CLIENT_SECRET": "b",
+		"GH_ACCESS_TOKEN":  "c",
+	})
+	defer restoreEnv(env)
+	assert(env != nil, t)
+
+	plugin.issues = nil
+	plugin.Load(nil)
+	assert(plugin.issues != nil, t)
 }
