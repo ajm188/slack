@@ -1,6 +1,9 @@
 package github
 
 import (
+	"regexp"
+
+	log "github.com/Sirupsen/logrus"
 	"github.com/ajm188/slack"
 	"github.com/google/go-github/github"
 )
@@ -55,4 +58,48 @@ func (plugin *OpenIssuePlugin) Load(bot *slack.Bot, args ...interface{}) error {
 		plugin.issues = Client(plugin).Issues
 	}
 	return nil
+}
+
+func extractPluginArgs(args ...interface{}) (repoRe, argsRe *regexp.Regexp) {
+	if len(args) > 0 {
+		repoRe = interfaceToRegexpWithSubexps(args[0], 2)
+	}
+	if repoRe == nil {
+		repoRe = regexp.MustCompile("issue me ([^/ ]+)/([^/ ]+)")
+	}
+
+	if len(args) > 1 {
+		argsRe = interfaceToRegexpWithSubexps(args[1], 1)
+	}
+	if argsRe == nil {
+		argsRe = regexp.MustCompile("(\".*?[^\\\\]\")")
+	}
+	return
+}
+
+func interfaceToRegexp(arg interface{}) (re *regexp.Regexp) {
+	switch arg.(type) {
+	default:
+		log.WithFields(log.Fields{
+			"arg": arg,
+		}).Error("argument must be string or *regexp.Regexp")
+	case string:
+		re = regexp.MustCompile(arg.(string))
+	case *regexp.Regexp:
+		re = arg.(*regexp.Regexp)
+	}
+	return
+}
+
+func interfaceToRegexpWithSubexps(arg interface{}, n int) (re *regexp.Regexp) {
+	re = interfaceToRegexp(arg)
+	if re != nil && re.NumSubexp() != n {
+		log.WithFields(log.Fields{
+			"regular expression": re,
+			"required subexps":   n,
+			"arg":                arg,
+		}).Error("argument had incorrect number of subexps")
+		re = nil
+	}
+	return
 }

@@ -1,6 +1,7 @@
 package github
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/google/go-github/github"
@@ -61,4 +62,72 @@ func TestOpenIssue_Load(t *testing.T) {
 	plugin.issues = nil
 	plugin.Load(nil)
 	assert(plugin.issues != nil, t)
+}
+
+func TestPrivate_interfaceToRegexp(t *testing.T) {
+	var tests = []struct {
+		arg      interface{}
+		expected *regexp.Regexp
+	}{
+		{
+			arg:      "hello",
+			expected: regexp.MustCompile("hello"),
+		},
+		{
+			arg:      regexp.MustCompile("world"),
+			expected: regexp.MustCompile("world"),
+		},
+		{
+			arg:      5,
+			expected: nil,
+		},
+	}
+
+	for _, test := range tests {
+		actual := interfaceToRegexp(test.arg)
+		if test.expected == nil || actual == nil {
+			assert(test.expected == actual, t)
+		} else {
+			actualPrefix, actualFull := actual.LiteralPrefix()
+			expectedPrefix, expectedFull := test.expected.LiteralPrefix()
+			assert(actualPrefix == expectedPrefix, t)
+			assert(actualFull == expectedFull, t)
+		}
+	}
+}
+
+func TestPrivate_interfaceToRegexpWithSubexps(t *testing.T) {
+	var tests = []struct {
+		arg      interface{}
+		n        int
+		expected *regexp.Regexp
+	}{
+		{
+			arg:      "(hello)",
+			n:        1,
+			expected: regexp.MustCompile("(hello)"),
+		},
+		{
+			arg:      "(foo)(bar)",
+			n:        3,
+			expected: nil,
+		},
+		{
+			arg:      75,
+			n:        -1,
+			expected: nil,
+		},
+	}
+
+	for _, test := range tests {
+		actual := interfaceToRegexpWithSubexps(test.arg, test.n)
+		if test.expected == nil || actual == nil {
+			assert(test.expected == actual, t)
+		} else {
+			actualPrefix, actualFull := actual.LiteralPrefix()
+			expectedPrefix, expectedFull := test.expected.LiteralPrefix()
+			assert(actualPrefix == expectedPrefix, t)
+			assert(actualFull == expectedFull, t)
+		}
+	}
 }

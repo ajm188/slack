@@ -8,6 +8,10 @@ import (
 	"github.com/ajm188/slack"
 )
 
+func init() {
+	log.SetLevel(log.PanicLevel)
+}
+
 func stubEnv(env map[string]string) map[string]string {
 	oldEnv := make(map[string]string, len(env))
 	for name, value := range env {
