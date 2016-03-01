@@ -9,8 +9,16 @@ engines:
         enabled: true
 
 ratings:
-    paths:
-    - .*([^t]|t[^e]|te[^s]|tes[^t])\.go
+  paths:
+  - ".go"
 
 exclude_paths:
-- "*_test.go"
+- "api_test.go"
+- "bot_test.go"
+- "direct_message_test.go"
+- "error_test.go"
+- "event_test.go"
+- "listen_test.go"
+- "mention_test.go"
+- "message_test.go"
+- "respond_test.go"
