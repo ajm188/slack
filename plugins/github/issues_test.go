@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/ajm188/slack"
 	"github.com/google/go-github/github"
 )
 
@@ -44,11 +45,12 @@ func TestOpenIssue_CanLoad(t *testing.T) {
 }
 
 func TestOpenIssue_Load(t *testing.T) {
+	bot := slack.NewBot("TOKEN")
 	dummyIssuesService := github.NewClient(nil).Issues
 	plugin := OpenIssue().(*OpenIssuePlugin)
 	plugin.issues = dummyIssuesService
 
-	plugin.Load(nil)
+	plugin.Load(bot)
 	assert(plugin.issues == dummyIssuesService, t)
 
 	env := stubEnv(map[string]string{
@@ -60,7 +62,7 @@ func TestOpenIssue_Load(t *testing.T) {
 	assert(env != nil, t)
 
 	plugin.issues = nil
-	plugin.Load(nil)
+	plugin.Load(bot)
 	assert(plugin.issues != nil, t)
 }
 

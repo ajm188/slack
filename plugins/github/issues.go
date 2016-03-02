@@ -57,7 +57,15 @@ func (plugin *OpenIssuePlugin) Load(bot *slack.Bot, args ...interface{}) error {
 	if plugin.issues == nil {
 		plugin.issues = Client(plugin).Issues
 	}
+	repoRe, argsRe := extractPluginArgs(args...)
+	bot.RespondRegexp(repoRe, plugin.handler(repoRe, argsRe))
 	return nil
+}
+
+func (plugin *OpenIssuePlugin) handler(repoRe, argsRe *regexp.Regexp) slack.BotAction {
+	return func(bot *slack.Bot, event map[string]interface{}) (*slack.Message, slack.Status) {
+		return nil, slack.Continue
+	}
 }
 
 func extractPluginArgs(args ...interface{}) (repoRe, argsRe *regexp.Regexp) {
