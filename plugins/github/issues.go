@@ -68,6 +68,17 @@ func (plugin *OpenIssuePlugin) handler(repoRe, argsRe *regexp.Regexp) slack.BotA
 	}
 }
 
+func extractOwnerAndRepo(text string, re *regexp.Regexp, err error) (string, string, error) {
+	if err != nil {
+		return "", "", err
+	}
+	m := re.FindStringSubmatch(text)
+	if m == nil || len(m) != 3 {
+		return "", "", &repoError{text}
+	}
+	return m[1], m[2], nil
+}
+
 func extractPluginArgs(args ...interface{}) (repoRe, argsRe *regexp.Regexp) {
 	if len(args) > 0 {
 		repoRe = interfaceToRegexpWithSubexps(args[0], 2)

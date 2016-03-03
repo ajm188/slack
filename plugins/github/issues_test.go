@@ -66,6 +66,70 @@ func TestOpenIssue_Load(t *testing.T) {
 	assert(plugin.issues != nil, t)
 }
 
+func TestPrivate_extractOwnerAndRepo(t *testing.T) {
+	var tests = []struct {
+		text          string
+		pattern       string
+		err           error
+		expectedOwner string
+		expectedRepo  string
+		expectedErr   bool
+	}{
+		{
+			text:          "happy path",
+			pattern:       "(.*) (.*)",
+			err:           nil,
+			expectedOwner: "happy",
+			expectedRepo:  "path",
+			expectedErr:   false,
+		},
+		{
+			text:          "issue me default/pattern",
+			pattern:       "issue me ([^/ ]+)/([^/ ]+)",
+			err:           nil,
+			expectedOwner: "default",
+			expectedRepo:  "pattern",
+			expectedErr:   false,
+		},
+		{
+			text:          "no match",
+			pattern:       "(na) (.*)",
+			err:           nil,
+			expectedOwner: "",
+			expectedRepo:  "",
+			expectedErr:   true,
+		},
+		{
+			text:          "not enough capture groups",
+			pattern:       "(not).*",
+			err:           nil,
+			expectedOwner: "",
+			expectedRepo:  "",
+			expectedErr:   true,
+		},
+		{
+			text:          "err is non-nil",
+			pattern:       "",
+			err:           &repoError{"some error"},
+			expectedOwner: "",
+			expectedRepo:  "",
+			expectedErr:   true,
+		},
+	}
+
+	for _, test := range tests {
+		re := regexp.MustCompile(test.pattern)
+		owner, repo, err := extractOwnerAndRepo(test.text, re, test.err)
+		if test.expectedErr {
+			assert(err != nil, t)
+		} else {
+			assert(owner == test.expectedOwner, t)
+			assert(repo == test.expectedRepo, t)
+			assert(err == nil, t)
+		}
+	}
+}
+
 func TestPrivate_interfaceToRegexp(t *testing.T) {
 	var tests = []struct {
 		arg      interface{}
