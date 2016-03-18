@@ -1,6 +1,7 @@
 package github
 
 import (
+	"fmt"
 	"regexp"
 
 	log "github.com/Sirupsen/logrus"
@@ -64,8 +65,97 @@ func (plugin *OpenIssuePlugin) Load(bot *slack.Bot, args ...interface{}) error {
 
 func (plugin *OpenIssuePlugin) handler(repoRe, argsRe *regexp.Regexp) slack.BotAction {
 	return func(bot *slack.Bot, event map[string]interface{}) (*slack.Message, slack.Status) {
-		return nil, slack.Continue
+		var owner, repo string
+		var title, body, assignee *string
+		var err error
+		var request *github.IssueRequest
+
+		text := event["text"].(string)
+		userID := event["user"].(string)
+
+		owner, repo, err = extractOwnerAndRepo(text, repoRe, nil)
+		title, body, assignee, err = extractIssueArgs(text, argsRe, err)
+		err = appendSlackSignature(body, bot.Users[userID], err)
+		request, err = buildIssueRequest(title, body, assignee, err)
+
+		if err != nil {
+			return nil, slack.Continue
+		}
+
+		var response string
+
+		issue, _, err := plugin.issues.Create(owner, repo, request)
+		if err != nil {
+			response = fmt.Sprintf(
+				"I had some trouble opening that issue. Here was the error I got:\n%v",
+				err)
+		} else {
+			response = fmt.Sprintf(
+				"I opened that issue for you. You can view it here: %s.",
+				*issue.HTMLURL)
+		}
+		message := bot.Mention(userID, response, event["channel"].(string))
+		status := slack.Continue
+		return message, status
 	}
+}
+
+func buildIssueRequest(title, body, assignee *string, err error) (*github.IssueRequest, error) {
+	if err != nil {
+		return nil, err
+	}
+	open := "open"
+	request := &github.IssueRequest{
+		Title:     title,
+		Body:      body,
+		Labels:    nil,
+		Assignee:  assignee,
+		State:     &open,
+		Milestone: nil,
+	}
+	return request, nil
+}
+
+func appendSlackSignature(body *string, user *slack.User, err error) error {
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return &repoError{"could not find user"}
+	}
+	fullName := user.FullName()
+	name := user.Nick
+	if fullName != "" {
+		name += fmt.Sprintf(" (%s)", fullName)
+	}
+	*body += fmt.Sprintf("\n\n Issue created via slack on behalf of %s.", name)
+	return nil
+}
+
+func extractIssueArgs(text string, re *regexp.Regexp, err error) (title, body, assignee *string, e error) {
+	e = err
+	if e != nil {
+		return
+	}
+	match := re.FindAllString(text, -1)
+	if match == nil || len(match) == 0 {
+		e = &issueError{text}
+		return
+	}
+
+	m := make([]string, len(match))
+	for i, v := range match {
+		m[i] = v[1 : len(v)-1] // strip off the quotes
+	}
+
+	title = &m[0]
+	if len(m) > 1 {
+		body = &m[1]
+	}
+	if len(m) > 2 {
+		assignee = &m[2]
+	}
+	return
 }
 
 func extractOwnerAndRepo(text string, re *regexp.Regexp, err error) (string, string, error) {
